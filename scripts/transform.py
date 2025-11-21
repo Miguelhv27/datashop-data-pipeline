@@ -1,6 +1,7 @@
 import pandas as pd
 import os
-from datetime import datetime, timedelta
+from datetime import datetime
+import json
 
 
 def convert_to_native_types(obj):
@@ -18,34 +19,42 @@ def calculate_daily_metrics(orders_file, customers_file, output_path):
     Calcula las métricas diarias requeridas para el informe
     """
     try:
+        # Leer datos
         orders_df = pd.read_csv(orders_file)
         customers_df = pd.read_csv(customers_file)
 
+        # Asegurar tipos de datos numéricos
         orders_df['quantity'] = pd.to_numeric(orders_df['quantity'], errors='coerce').fillna(0)
         orders_df['unit_price'] = pd.to_numeric(orders_df['unit_price'], errors='coerce').fillna(0)
 
+        # Calcular ventas totales del día
         orders_df['total_sale'] = orders_df['quantity'] * orders_df['unit_price']
         total_sales = float(orders_df['total_sale'].sum())
 
+        # Top 5 productos más vendidos
         product_sales = orders_df.groupby('product_id').agg({
             'quantity': 'sum',
             'total_sale': 'sum'
         }).reset_index()
 
+        # Manejar caso cuando no hay datos
         if len(product_sales) > 0:
             top_5_products = product_sales.nlargest(5, 'quantity')[['product_id', 'quantity', 'total_sale']]
+            # Convertir a tipos nativos
             top_5_products['product_id'] = top_5_products['product_id'].astype(int)
             top_5_products['quantity'] = top_5_products['quantity'].astype(int)
             top_5_products['total_sale'] = top_5_products['total_sale'].astype(float)
         else:
             top_5_products = pd.DataFrame(columns=['product_id', 'quantity', 'total_sale'])
 
+        # Cliente con la compra más grande del día
         customer_sales = orders_df.groupby('customer_id')['total_sale'].sum().reset_index()
 
         if len(customer_sales) > 0 and customer_sales['total_sale'].sum() > 0:
             biggest_customer_id = int(customer_sales.loc[customer_sales['total_sale'].idxmax(), 'customer_id'])
             biggest_customer_sale = float(customer_sales['total_sale'].max())
 
+            # Obtener nombre del cliente
             customer_match = customers_df[customers_df['customer_id'] == biggest_customer_id]
             if len(customer_match) > 0:
                 biggest_customer_name = str(customer_match['customer_name'].iloc[0])
@@ -56,6 +65,7 @@ def calculate_daily_metrics(orders_file, customers_file, output_path):
             biggest_customer_sale = 0.0
             biggest_customer_name = "Sin compras"
 
+        # Preparar resultados con tipos nativos
         results = {
             'report_date': datetime.now().strftime('%Y-%m-%d'),
             'total_sales': round(total_sales, 2),
@@ -74,14 +84,17 @@ def calculate_daily_metrics(orders_file, customers_file, output_path):
             ]
         }
 
+        # Crear directorio de salida si no existe
         os.makedirs(output_path, exist_ok=True)
 
+        # Guardar resultados
         output_file = os.path.join(output_path, f"daily_report_{datetime.now().strftime('%Y-%m-%d')}.json")
 
-        import json
+        # Guardar como JSON
         with open(output_file, 'w', encoding='utf-8') as f:
             json.dump(results, f, indent=2, ensure_ascii=False)
 
+        # También guardar top products como CSV
         if len(top_5_products) > 0:
             top_products_file = os.path.join(output_path, f"top_products_{datetime.now().strftime('%Y-%m-%d')}.csv")
             top_5_products.to_csv(top_products_file, index=False)
@@ -94,6 +107,7 @@ def calculate_daily_metrics(orders_file, customers_file, output_path):
 
 
 if __name__ == "__main__":
+    # Para pruebas locales - usar el archivo que existe
     orders_file = "data/input/orders_2024-01-01.csv"
     customers_file = "data/input/customers.csv"
     output_path = "data/output/"
