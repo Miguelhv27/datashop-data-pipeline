@@ -1,0 +1,36 @@
+{
+  "report_date": "2025-11-21",
+  "total_sales": 675.5,
+  "biggest_customer": {
+    "customer_id": 101,
+    "customer_name": "Juan Pérez",
+    "total_spent": 171.0
+  },
+  "top_5_products": [
+    {
+      "product_id": 201,
+      "quantity": 10,
+      "total_sale": 255.0
+    },
+    {
+      "product_id": 205,
+      "quantity": 4,
+      "total_sale": 49.0
+    },
+    {
+      "product_id": 202,
+      "quantity": 3,
+      "total_sale": 135.0
+    },
+    {
+      "product_id": 203,
+      "quantity": 2,
+      "total_sale": 31.5
+    },
+    {
+      "product_id": 207,
+      "quantity": 2,
+      "total_sale": 60.0
+    }
+  ]
+}
