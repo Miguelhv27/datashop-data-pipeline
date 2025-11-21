@@ -57,6 +57,11 @@ Documentación completa con README.md claro y diagramas de arquitectura. require
 
 Evidencia de funcionamiento con capturas de pantalla del UI de Airflow mostrando ejecución exitosa. Capturas de la pestaña Actions de GitHub mostrando tests pasados. Logs de ejecución con métricas calculadas correctamente.
 
+### Test
+Imagen mostrando que los test pasaron al hacer el push en github.
+
+![Arquitectura del Sistema](images/Actions_pasaron_test.jpg) 
+
 ## Conclusión
 
 Este proyecto demuestra la implementación práctica de principios DataOps en un pipeline de datos para e-commerce. La automatización, colaboración y calidad de datos están integradas en cada fase del ciclo de vida. 
