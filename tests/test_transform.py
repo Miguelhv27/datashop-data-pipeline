@@ -2,11 +2,10 @@ import pytest
 import pandas as pd
 import sys
 import os
-
-sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
-
 from scripts.transform import calculate_daily_metrics
 from scripts.data_quality_check import validate_orders_data
+
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
 
 class TestDataTransformations:
@@ -142,3 +141,4 @@ class TestDataQuality:
 
         with pytest.raises(ValueError):
             validate_orders_data(file_path)
+
